@@ -1,325 +1,397 @@
-# Python Complete Course: Real-World Deep Dive
+# Python Complete Course: The Exhaustive Guide
 
-This guide breaks down every core concept of Python, dropping abstract textbook definitions in favor of deep theory paired strictly with real-world scenarios and their programmatic implementations.
+This guide is an encyclopedic breakdown of every Python topic (excluding OOP, which is covered in a separate masterclass). For each topic, you will find every single subtopic explained in extreme theoretical detail, backed by real-world engineering scenarios and fully implemented code examples.
 
 ---
 
-## 1. Introduction to Python
+## 1. Variables & Core Data Types
 
-**Theory:**
-Python is an interpreted, high-level, dynamically typed language. "Interpreted" means code is executed line-by-line rather than compiled all at once, making debugging easier. "Dynamically typed" means you do not need to declare variable types (like `int` or `string`) before using them.
+**Theory & Subtopics:**
+Python is dynamically typed; you don't explicitly declare types.
+*   **Primitives:**
+    *   `int`: Whole numbers. Unlimited length in Python.
+    *   `float`: Decimal numbers (IEEE 754 double precision).
+    *   `complex`: Numbers with real and imaginary parts (e.g., `3 + 4j`).
+    *   `bool`: `True` or `False`. Subclasses of integers (`True == 1`, `False == 0`).
+*   **Type Checking:** Using `type()` to see the class, and `isinstance()` to check against a type safely.
+*   **Type Casting:** Forcing one type into another (e.g., `int("10")`).
 
-**Real-World Example (The Startup MVP):**
-A startup needs to build a backend system for a new app in 3 weeks. They choose Python over C++ because Python's readability and massive ecosystem of pre-built libraries allow developers to build a Minimum Viable Product (MVP) ten times faster.
+**Real-World Example (Scientific Computing & Type Validation):**
+A weather application receives raw sensor data as strings. It must validate that the data is numeric, cast it to floats for precise temperature calculation, and use booleans to trigger storm warnings.
 
 **Program Implementation:**
 ```python
-# A simple script demonstrating dynamic typing
-startup_name = "TechFlow" # Dynamically assigned as a string
-funding_round = 1.5       # Dynamically assigned as a float
+raw_temp_input = "98.6"
 
-print(f"Welcome to {startup_name}. We just raised ${funding_round} Million.")
+# Type Casting
+temperature = float(raw_temp_input)
+
+# Complex numbers for advanced mathematics (e.g., electrical engineering phase angles)
+phase_angle = 2 + 3j
+
+# Type Checking (Best Practice)
+if isinstance(temperature, float):
+    print("Valid decimal temperature received.")
+
+# Boolean logic (True is literally 1 under the hood)
+is_freezing = temperature <= 32.0
+print(f"Is it freezing? {is_freezing}") # False
+print(f"Math with bools: {is_freezing + 5}") # Outputs 5 (0 + 5)
 ```
 
 ---
 
-## 2. Variables & Data Types
+## 2. Operators Deep Dive
 
 **Theory & Subtopics:**
-Variables are named memory locations holding data.
-*   **Integers (`int`) & Floats (`float`):** For mathematical data.
-*   **Booleans (`bool`):** True/False flags.
-*   **Strings (`str`):** Text data.
-*   **Type Casting:** Converting one data type into another (e.g., string to int).
+Operators manipulate data. Python has several specific categories:
+*   **Arithmetic:** `+`, `-`, `*`, `/` (float division), `//` (floor division - rounds down), `%` (modulo - remainder), `**` (exponentiation).
+*   **Assignment:** `=`, `+=`, `-=`, `*=`, etc.
+*   **Comparison:** `==`, `!=`, `<`, `>`, `<=`, `>=`. Python supports chained comparisons (`1 < x < 10`).
+*   **Logical (Short-Circuiting):** `and`, `or`, `not`. Python evaluates these lazily (short-circuiting).
+*   **Identity:** `is`, `is not`. Checks if two variables point to the *exact same memory address* (using `id()`).
+*   **Membership:** `in`, `not in`. Checks if a sequence contains a value.
+*   **Bitwise:** `&` (AND), `|` (OR), `^` (XOR), `~` (NOT), `<<` (Left Shift). Manipulates data at the binary level.
 
-**Real-World Example (E-Commerce Product Page):**
-When rendering an Amazon product page, the backend must store different types of data: the product name (string), the price (float), the stock count (integer), and whether it qualifies for Prime shipping (boolean).
+**Real-World Example (E-Commerce Promotion Engine):**
+An online store applies discounts using logical short-circuiting to save database calls, and uses modulo to determine if a user's ID qualifies for a random "every 100th customer" prize.
 
 **Program Implementation:**
 ```python
-# Raw data from a database
-product_name = "Mechanical Keyboard"
-price_str = "89.99"
-stock = 150
+user_id = 4500
+cart_value = 120.0
+is_vip = False
 
-# Type casting the string price into a float so we can do math with it
-price_float = float(price_str)
-tax = price_float * 0.08
-total_price = price_float + tax
+# Arithmetic & Modulo: Every 100th user gets a prize
+is_winner = (user_id % 100 == 0)
 
-is_prime_eligible = True
+# Chained Comparison
+if 100 <= cart_value <= 500:
+    print("Eligible for standard free shipping.")
 
-print(f"Item: {product_name} | Total: ${total_price:.2f} | Prime: {is_prime_eligible}")
+# Identity vs Equality
+list_a = [1, 2, 3]
+list_b = [1, 2, 3]
+print(list_a == list_b) # True (Values are equal)
+print(list_a is list_b) # False (Different objects in memory)
+
+# Membership
+allowed_roles = ["admin", "editor"]
+print("guest" in allowed_roles) # False
+
+# Bitwise (Used heavily in cryptography and low-level permissions)
+# Binary 1010 (10) & 1100 (12) = 1000 (8)
+print(10 & 12) 
 ```
 
 ---
 
-## 3. Operators
+## 3. Control Statements
 
 **Theory & Subtopics:**
-Operators perform operations on values.
-*   **Arithmetic (`+`, `-`, `*`, `/`, `//`, `%`):** Standard math. (`//` is floor division, `%` is remainder).
-*   **Comparison (`==`, `!=`, `>`, `<`):** Returns Boolean True/False.
-*   **Logical (`and`, `or`, `not`):** Combines multiple conditions.
+*   **`if-elif-else` & Nested Ifs:** Standard branching.
+*   **Ternary Operator:** A one-line `if-else` statement (`x if condition else y`).
+*   **Structural Pattern Matching (`match-case`):** Introduced in Python 3.10, this acts like a super-powered `switch` statement that can unpack data structures.
 
-**Real-World Example (Shopping Cart Discount Logic):**
-An online store offers free shipping if a user spends over $50 OR if they use a VIP promo code.
+**Real-World Example (API Routing & Configurations):**
+A backend server inspects incoming HTTP request methods (`GET`, `POST`, `DELETE`). It uses a ternary operator to set default ports, and `match-case` to cleanly route the HTTP methods.
 
 **Program Implementation:**
 ```python
-cart_total = 45.00
-has_vip_code = True
+# Ternary Operator: Clean, one-line assignment
+environment = "production"
+port = 443 if environment == "production" else 8080
 
-# Logical 'or' operator
-if cart_total > 50.00 or has_vip_code:
-    shipping_cost = 0.00
+# Match-Case (Python 3.10+)
+http_method = "POST"
+
+match http_method:
+    case "GET":
+        print("Fetching data from database...")
+    case "POST" | "PUT": # The '|' acts as an OR operator in match cases
+        print("Writing new data to database...")
+    case "DELETE":
+        print("Removing record...")
+    case _: # The underscore is the wildcard/default case
+        print("Unknown HTTP method.")
+```
+
+---
+
+## 4. Loops Exhaustive
+
+**Theory & Subtopics:**
+*   **`for` loops & `range()`:** Iterating over iterables. `range(start, stop, step)` generates numbers on the fly.
+*   **`while` loops:** Looping based on a condition.
+*   **Loop Control (`break`, `continue`, `pass`):** `break` destroys the loop. `continue` skips the current iteration. `pass` is a null placeholder.
+*   **The `else` clause in loops:** A unique Python feature. An `else` block attached to a `for/while` loop executes *only* if the loop finishes naturally (meaning it was NEVER interrupted by a `break`).
+
+**Real-World Example (Cybersecurity Port Scanner):**
+A script scans a list of network ports to find an open one. If it finds one, it `break`s. If it scans all ports and finds none open, the loop's `else` clause triggers a secure lockdown.
+
+**Program Implementation:**
+```python
+ports_to_scan = [80, 443, 8080, 22]
+target_port = 22
+
+# For loop with a break and an 'else' clause
+for port in ports_to_scan:
+    if port == target_port:
+        print(f"Vulnerability found on port {port}! Halting scan.")
+        break # Exit loop immediately
+    print(f"Port {port} is secure.")
 else:
-    shipping_cost = 5.99
+    # This ONLY runs if the 'break' statement was NEVER hit
+    print("Scan complete: No vulnerabilities found anywhere.")
 
-# Modulus operator to determine if a tracking number is even/odd for A/B testing
-tracking_number = 1042
-is_even_route = (tracking_number % 2 == 0)
-
-print(f"Shipping: ${shipping_cost}")
+# Continue statement: Skipping logic
+for i in range(1, 6): # 1, 2, 3, 4, 5
+    if i == 3:
+        continue # Skip the number 3
+    print(f"Processing item {i}")
 ```
 
 ---
 
-## 4. Control Statements (Conditionals & Loops)
+## 5. Strings Deep Dive
 
 **Theory & Subtopics:**
-Control flow dictates which code runs and how many times.
-*   **`if-elif-else`:** Decision branching.
-*   **`for` loops:** Iterate over a known collection (like a list).
-*   **`while` loops:** Run continuously until a condition becomes false.
+Strings are immutable arrays of Unicode characters.
+*   **Indexing & Slicing:** `string[start:stop:step]`. Negative indexing goes backward.
+*   **Concatenation & Multiplication:** `"a" + "b"` and `"a" * 3`.
+*   **Raw Strings & Escapes:** `\n` (newline), `\t` (tab). Prefixing with `r` (e.g., `r"C:\folder"`) ignores escape characters (vital for Regex and file paths).
+*   **Methods:**
+    *   Casing: `.upper()`, `.lower()`, `.title()`, `.capitalize()`.
+    *   Searching: `.find()`, `.count()`, `.startswith()`, `.endswith()`.
+    *   Modification: `.replace()`, `.strip()`, `.split()`, `.join()`.
+*   **Formatting:** Legacy `%s`, `.format()`, and modern `f"{vars}"`.
 
-**Real-World Example (Security Access & API Retries):**
-*   **Conditionals:** A system checking a user's role to grant admin access.
-*   **While Loop:** A script trying to connect to a database. If it fails, it waits and retries up to 3 times before giving up.
+**Real-World Example (Data Pipeline Parsing):**
+A data engineer receives a messy, single-line comma-separated log file. They must use string methods to break it apart, clean the whitespace, and format a clean alert message.
 
 **Program Implementation:**
 ```python
-# 1. Conditionals: Role Access
-user_role = "moderator"
-if user_role == "admin":
-    print("Full database access granted.")
-elif user_role == "moderator":
-    print("Content editing access granted.")
-else:
-    print("Read-only access granted.")
+raw_log = "   ERROR, server_timeout, 10:45PM   "
 
-# 2. While loop: API Retry Mechanism
-connection_attempts = 0
-connected = False
+# Cleaning and Splitting
+clean_log = raw_log.strip().lower() # "error, server_timeout, 10:45pm"
+log_parts = clean_log.split(", ")   # ['error', 'server_timeout', '10:45pm']
 
-while connection_attempts < 3 and not connected:
-    print(f"Attempting connection... ({connection_attempts + 1}/3)")
-    # Simulate a failed connection
-    connection_attempts += 1
+# Slicing: Reversing a string
+reversed_word = "Python"[::-1] # "nohtyP"
 
-if not connected:
-    print("Failed to connect to the database.")
+# Raw strings for file paths (prevents \n from becoming a newline)
+windows_path = r"C:\new_folder\test.txt"
+
+# Joining a list back into a string
+reconstructed = " | ".join(log_parts)
+
+# f-strings with formatting (e.g., padding, decimals)
+cpu_usage = 85.567
+print(f"Log: {reconstructed}")
+print(f"CPU Usage: {cpu_usage:.1f}%") # Rounds to 1 decimal place: 85.6%
 ```
 
 ---
 
-## 5. Strings
+## 6. Lists & Tuples Exhaustive
 
 **Theory & Subtopics:**
-Strings are immutable sequences of characters.
-*   **Slicing `[start:stop:step]`:** Extracting parts of a string.
-*   **Methods:** Built-in functions to alter strings (`.lower()`, `.strip()`, `.replace()`).
-*   **f-strings:** Dynamic string interpolation.
+*   **Lists (`[]`):** Mutable. Dynamic arrays.
+    *   *Methods:* `.append()` (add one), `.extend()` (merge lists), `.insert()`, `.remove()` (by value), `.pop()` (by index/remove last), `.clear()`, `.sort()`, `.reverse()`.
+    *   *Copying:* `list.copy()` creates a shallow copy. `import copy; copy.deepcopy(list)` copies nested lists.
+    *   *List Comprehensions:* `[expression for item in iterable if condition]`.
+*   **Tuples (`()`):** Immutable. Hashable (can be used as dictionary keys).
+    *   *Packing/Unpacking:* Extracting multiple values instantly.
+    *   *Singleton Tuple:* Requires a comma: `(5,)`.
 
-**Real-World Example (Sanitizing User Input):**
-When users fill out a registration form, they often accidentally add spaces or mix capital letters. The backend must sanitize this string before saving it to the database so "  Alice@email.com" matches "alice@email.com".
+**Real-World Example (Stock Market Ticker & Immutable Coordinates):**
+A trading bot uses a List to track the last 5 stock prices (constantly appending and popping). It uses Tuples to define fixed geographical server locations (which must never be accidentally overwritten).
 
 **Program Implementation:**
 ```python
-raw_email_input = "   ALicE.Smith@EmaiL.com   "
+# LISTS
+stock_prices = [100, 102, 101, 105]
+stock_prices.append(108)         # Add to end
+stock_prices.insert(0, 99)       # Insert at beginning
+popped_price = stock_prices.pop() # Removes and returns 108
 
-# Sanitization using string methods
-# .strip() removes leading/trailing spaces
-# .lower() makes it all lowercase
-clean_email = raw_email_input.strip().lower()
+# List Comprehension: Square all even prices
+even_squares = [price ** 2 for price in stock_prices if price % 2 == 0]
 
-# Extracting the username using the .split() method
-username = clean_email.split("@")[0]
+# TUPLES
+server_locations = ("NYC", "LON", "TOK")
+# server_locations[0] = "SFO" # TypeError! Immutable.
 
-print(f"Database saved: {clean_email}")
-print(f"Welcome, {username}!")
+# Tuple Unpacking (Swapping variables instantly)
+a, b = 10, 20
+a, b = b, a # a is now 20, b is 10
+
+# Returning multiple values from a function creates a Tuple automatically
+def get_status():
+    return 200, "OK" # Returns (200, "OK")
+
+code, message = get_status() # Unpacking
 ```
 
 ---
 
-## 6. Lists & Tuples
+## 7. Dictionaries & Sets
 
 **Theory & Subtopics:**
-*   **Lists (`[]`):** Ordered, mutable (changeable) collections.
-*   **Tuples (`()`):** Ordered, immutable (unchangeable) collections. Faster and more memory efficient than lists.
+*   **Dictionaries (`{k:v}`):** Hash maps. Keys must be immutable (strings, ints, tuples). Fast O(1) lookups.
+    *   *Methods:* `.get(key, default)`, `.keys()`, `.values()`, `.items()`, `.update()`, `.pop()`.
+    *   *Dict Comprehensions:* `{k: v for k,v in iterable}`.
+*   **Sets (`{}`):** Unordered collections of UNIQUE elements. Highly optimized for math operations.
+    *   *Math:* Union (`|`), Intersection (`&`), Difference (`-`), Symmetric Difference (`^`).
 
-**Real-World Example (Shopping Carts vs GPS Coordinates):**
-A shopping cart must be a **List** because the user will constantly add, remove, and change items. However, the GPS coordinates of a physical store location will never change, so they should be stored in a **Tuple** to prevent accidental modification in the code.
+**Real-World Example (Social Media Analytics):**
+A platform uses Dictionaries to store user profile data (O(1) fast lookup). It uses Sets to find mutual friends between two users instantly via Intersection operations.
 
 **Program Implementation:**
 ```python
-# Mutable List: Shopping Cart
-cart = ["Laptop", "Mouse"]
-cart.append("Keyboard") # Adding an item
-cart[1] = "Wireless Mouse" # Modifying an item
-print(f"Cart contents: {cart}")
+# DICTIONARIES
+user_profile = {"id": 1, "username": "admin"}
+user_profile.update({"email": "admin@sys.com", "role": "super"})
 
-# Immutable Tuple: Store GPS Location (Latitude, Longitude)
-hq_location = (37.7749, -122.4194)
-# hq_location[0] = 38.0000 # This would throw a TypeError!
+# Safe retrieval
+phone = user_profile.get("phone", "No phone provided")
 
-# Tuple Unpacking
-lat, lon = hq_location
-print(f"Routing to Lat: {lat}, Lon: {lon}")
+# Iterating over key-value pairs
+for key, value in user_profile.items():
+    print(f"{key}: {value}")
+
+# Dict Comprehension: Create a dict mapping numbers to their cubes
+cubes = {x: x**3 for x in range(1, 4)} # {1: 1, 2: 8, 3: 27}
+
+# SETS (Removing duplicates & Math)
+alice_friends = {"Bob", "Charlie", "David"}
+bob_friends = {"Charlie", "David", "Eve"}
+
+print(f"Mutual Friends: {alice_friends & bob_friends}") # Intersection: {'Charlie', 'David'}
+print(f"All Unique Friends: {alice_friends | bob_friends}") # Union
+print(f"Only Alice's Friends: {alice_friends - bob_friends}") # Difference: {'Bob'}
 ```
 
 ---
 
-## 7. Dictionaries
+## 8. Functions & Scope
 
 **Theory & Subtopics:**
-Dictionaries (`{}`) map unique **keys** to specific **values**. They are heavily optimized for incredibly fast data retrieval.
+*   **Parameters vs Arguments:** Parameters are variables in the definition; arguments are the actual values passed.
+*   **Positional vs Keyword Arguments:** `func(10, b=20)`.
+*   **Default Arguments Trap:** NEVER use mutable objects (like `[]` or `{}`) as default arguments; they persist across function calls. Use `None` instead.
+*   **`*args` & `**kwargs`:** `*args` packs remaining positional arguments into a Tuple. `**kwargs` packs keyword arguments into a Dictionary.
+*   **Scope & `global`:** Variables inside functions are Local. The `global` keyword allows modifying global variables from inside a function.
+*   **Lambda Functions:** Anonymous, single-expression functions: `lambda x: x + 1`.
 
-**Real-World Example (JSON API Responses):**
-When a frontend app requests data from Twitter's server, the server sends back a JSON file, which Python parses directly into a Dictionary. This allows the app to quickly look up the user's follower count without scanning an entire list.
+**Real-World Example (Cloud Infrastructure Provisioning):**
+A cloud script deploys virtual machines. It requires a mandatory OS type, but can accept an infinite number of optional configuration tags (`**kwargs`).
 
 **Program Implementation:**
 ```python
-# A dictionary representing an API response for a user profile
-api_response = {
-    "user_id": 9942,
-    "username": "coder123",
-    "followers": 1500,
-    "is_verified": False
-}
+# The Mutable Default Argument Trap (How to do it correctly)
+def add_item(item, inventory=None):
+    if inventory is None:
+        inventory = [] # Creates a fresh list every time
+    inventory.append(item)
+    return inventory
 
-# Accessing data securely using .get()
-# If 'subscription_tier' doesn't exist, it defaults to "Free" instead of crashing
-tier = api_response.get("subscription_tier", "Free")
-
-# Updating data
-api_response["followers"] += 1 
-api_response["is_verified"] = True
-
-print(f"User {api_response['username']} has {api_response['followers']} followers.")
-```
-
----
-
-## 8. Functions
-
-**Theory & Subtopics:**
-Functions (`def`) package code into reusable blocks.
-*   **Parameters & Returns:** Passing data in and getting data back.
-*   **`*args` and `**kwargs`:** Allowing a function to accept an infinite, dynamic number of arguments.
-
-**Real-World Example (Dynamic Event Logging System):**
-An application needs to log system events. Sometimes an event just has a message. Other times, it has an error code, a user ID, and a timestamp. `**kwargs` allows the logging function to accept any configuration of data without breaking.
-
-**Program Implementation:**
-```python
-def log_event(event_type, message, **kwargs):
-    print(f"[{event_type.upper()}] {message}")
+# *args and **kwargs
+def deploy_server(os_type, *packages, **configurations):
+    print(f"Deploying {os_type}...")
+    print(f"Installing packages (Tuple): {packages}")
     
-    # Iterate through any extra data passed to the function
-    for key, value in kwargs.items():
-        print(f"   -> {key}: {value}")
+    for config_key, config_val in configurations.items():
+        print(f"Applying Config -> {config_key}: {config_val}")
 
-# Calling with just mandatory args
-log_event("info", "Server started.")
+deploy_server("Ubuntu", "nginx", "docker", memory="16GB", region="us-east-1")
 
-# Calling with dynamic kwargs
-log_event("error", "Database timeout.", user_id=101, retry_count=3, latency_ms=450)
+# Lambda Function: Usually used inside sorting or filtering
+data = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
+data.sort(key=lambda person: person["age"]) # Sorts dictionary by age
 ```
 
 ---
 
-## 9. Object-Oriented Programming (OOP)
-
-**Theory:**
-Modeling code as real-world objects containing both state (variables/attributes) and behavior (functions/methods). Focuses on Encapsulation (hiding data) and Inheritance (sharing data).
-
-**Real-World Example (Ride-Sharing Fleet):**
-Uber manages thousands of cars. Instead of using complex lists, they create a `Vehicle` class. Every time a new driver joins, they instantiate a new `Vehicle` object to track that specific car's location and gas level.
-
-**Program Implementation:**
-```python
-class Vehicle:
-    def __init__(self, driver_name, model):
-        self.driver = driver_name
-        self.model = model
-        self.is_available = True
-        
-    def accept_ride(self):
-        if self.is_available:
-            self.is_available = False
-            return f"{self.driver} has accepted the ride."
-        return f"{self.driver} is currently busy."
-
-# Creating objects
-car1 = Vehicle("Alice", "Toyota Prius")
-print(car1.accept_ride()) # Accepts
-print(car1.accept_ride()) # Fails, already busy
-```
-
----
-
-## 10. Exception Handling
+## 9. Exception Handling
 
 **Theory & Subtopics:**
-Using `try`, `except`, `else`, and `finally` to catch runtime errors so the program doesn't crash catastrophically.
+*   **`try`:** Code that might crash.
+*   **`except SpecificError`:** Catching exact errors (e.g., `ValueError`, `KeyError`) rather than a bare `except:`, which catches everything including system exits.
+*   **`else`:** Runs ONLY if the `try` block succeeds without errors.
+*   **`finally`:** Runs unconditionally. Used for resource cleanup.
+*   **`raise`:** Manually triggering an exception.
+*   **Custom Exceptions:** Creating specific error classes by inheriting from `Exception`.
 
-**Real-World Example (Processing Payments):**
-If a script tries to charge a credit card and the network drops, the application shouldn't completely shut down. It should catch the network error, log it, and tell the user to try again.
+**Real-World Example (Database Transactions):**
+When transferring money between bank accounts, if a database failure occurs halfway through, the code must catch the `DatabaseError`, roll back the transaction, and `finally` close the connection.
 
 **Program Implementation:**
 ```python
-def charge_credit_card(card_number):
+# Custom Exception
+class InsufficientFundsError(Exception):
+    pass
+
+def withdraw(balance, amount):
     try:
-        # Simulating a crash: trying to divide by zero or process bad data
-        if len(card_number) < 16:
-            raise ValueError("Invalid card length")
-        print("Charging card...")
+        if type(amount) is not int:
+            raise TypeError("Amount must be an integer.")
+        if amount > balance:
+            raise InsufficientFundsError("You are too broke for this.")
         
-    except ValueError as e:
-        print(f"Payment Failed: {e}")
-    except Exception as e:
-        # Catch-all for unexpected crashes
-        print(f"Critical System Failure: {e}")
+        new_balance = balance - amount
+        
+    except TypeError as e:
+        print(f"Data Error: {e}")
+    except InsufficientFundsError as e:
+        print(f"Business Logic Error: {e}")
+    else:
+        # Only runs if NO exceptions occurred
+        print(f"Success! Withdrew ${amount}. New balance: ${new_balance}")
+        return new_balance
     finally:
-        # Always runs, great for closing database/network connections
-        print("Closing secure payment gateway connection.")
+        # Always runs
+        print("Transaction record closed.")
 
-charge_credit_card("1234") # Triggers ValueError gracefully
+withdraw(100, 150) # Triggers InsufficientFundsError
 ```
 
 ---
 
-## 11. File Handling
+## 10. File Handling & Operating System Interaction
 
 **Theory & Subtopics:**
-Interacting with the operating system to read and write permanent files on the hard drive using modes like `'r'` (read), `'w'` (write), and `'a'` (append). Always uses the `with open()` context manager to prevent memory leaks.
+*   **`open(filename, mode)` Modes:** 
+    *   `r`: Read.
+    *   `w`: Write (overwrites).
+    *   `a`: Append.
+    *   `r+`: Read and Write.
+    *   `b`: Binary mode (e.g., `rb`, `wb` for images/PDFs).
+*   **Context Managers (`with`):** Guarantees the file is closed automatically, even if an exception crashes the program during reading.
+*   **Reading:** `.read()` (whole file), `.readline()` (one line), `.readlines()` (list of lines).
 
-**Real-World Example (Generating Nightly Reports):**
-A cron job runs at midnight. It calculates the total sales for the day and appends (adds to the bottom of the file) that summary to a `monthly_report.txt` file for the accounting department.
+**Real-World Example (Processing Application Logs):**
+A cybersecurity script opens a massive `access.log` file. It reads it line-by-line (to save RAM) and appends any IP addresses showing suspicious activity into a new `blocked_ips.txt` file.
 
 **Program Implementation:**
 ```python
-daily_sales = 4500.50
-date = "2024-10-25"
+# Writing initial data
+with open("system.log", "w") as file:
+    file.write("INFO: System started\n")
+    file.write("ERROR: Unauthorized access from 192.168.1.50\n")
 
-# Using 'a' (append) mode so we don't overwrite previous days' data
-# The 'with' statement guarantees the file is securely closed afterward
-with open("sales_report.txt", "a") as file:
-    file.write(f"Date: {date} | Total Sales: ${daily_sales}\n")
+# Reading line-by-line and Appending to another file
+with open("system.log", "r") as source_file:
+    # Opening a second file simultaneously
+    with open("blocked.txt", "a") as target_file:
+        for line in source_file:
+            if "ERROR" in line:
+                # Extract the IP and append it
+                ip = line.split("from ")[-1]
+                target_file.write(f"BLOCKED: {ip}")
 
-# Reading the file back to verify
-with open("sales_report.txt", "r") as file:
-    print("--- Monthly Report ---")
-    print(file.read())
+# Verification
+with open("blocked.txt", "r") as check_file:
+    print(check_file.read())
 ```
